@@ -54,6 +54,17 @@ class Usuario extends ActiveRecord{
         return self::$alertas;
     }
 
+    public function validarLogin(){
+        if(!$this->email){
+            self::$alertas['error'][] = "No has Ingresado un Email";
+        }
+        if(!$this->password){
+            self::$alertas['error'][] = "No has Ingresado un Password";
+        }
+
+        return self::$alertas;
+    }
+
     public function existeUsuario(){
         $query = "SELECT * FROM " . self::$tabla . " WHERE email = '" . $this->email . "' LIMIT 1";
 
@@ -71,5 +82,18 @@ class Usuario extends ActiveRecord{
 
     public function crearToken(){
         $this->token = uniqid();
+    }
+
+    public function passwordAndConfirmado($password){
+        $resultado = password_verify($password, $this->password);
+
+        if($resultado){
+            //Comprobar si esta verificado
+            if(!$this->confirmado){
+                return false;
+            }
+        }
+
+        return $resultado;
     }
 }

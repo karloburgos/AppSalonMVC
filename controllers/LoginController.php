@@ -9,12 +9,35 @@ use MVC\Router;
 class LoginController {
     public static function login(Router $router){
 
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+        $alertas = [];
 
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $auth = new Usuario($_POST);
+
+            $alertas = $auth->validarLogin();
+
+            if(empty($alertas)){
+                $usuario = Usuario::where('email', $auth->email);
+
+                //Validamos si esta el Correo
+                if($usuario){
+                    echo "El usuario Existe";
+                    //Validamos la Contraseña y que este verificado
+                    $resultado = $usuario->passwordAndConfirmado($auth->password);
+
+                    printArray($resultado);
+
+
+                }else{
+                    Usuario::setAlerta('error', 'Usuario no Encontrado');
+                    $alertas = Usuario::getAlertas();
+                }
+            }
         }
 
-        $router->render('auth/login', [
 
+        $router->render('auth/login', [
+            'alertas' => $alertas
         ]);
         
     }
@@ -100,7 +123,7 @@ class LoginController {
             Usuario::setAlerta('error', 'El Token no es Valido');
         }else{
             $usuario->confirmado = '1';
-            $usuario->token = '';
+            $usuario->token = null;
 
             //Actualizamos a Usuario
             $usuario->guardar();

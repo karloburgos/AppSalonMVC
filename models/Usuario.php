@@ -89,11 +89,12 @@ class Usuario extends ActiveRecord{
 
         if($resultado){
             //Comprobar si esta verificado
-            if(!$this->confirmado){
+            if(!$resultado || !$this->confirmado){
+                self::$alertas['error'][] = "Password Incorrecto o tu Cuenta no ha Sido Confirmada";
                 return false;
+            }else{
+                return true;
             }
         }
-
-        return $resultado;
     }
 }

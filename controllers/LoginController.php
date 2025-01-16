@@ -23,7 +23,15 @@ class LoginController {
                 if($usuario){
                     echo "El usuario Existe";
                     //Validamos la Contraseña y que este verificado
-                    $resultado = $usuario->passwordAndConfirmado($auth->password);
+                    if($usuario->passwordAndConfirmado($auth->password)){
+                        session_start();
+
+                        $_SESSION['id'] = $usuario->id;
+                        $_SESSION['nombre'] = $usuario->nombre;
+                        $_SESSION['apellido'] = $usuario->apellido;
+
+                        printArray($_SESSION);
+                    };
 
                     printArray($resultado);
 
@@ -34,7 +42,6 @@ class LoginController {
                 }
             }
         }
-
 
         $router->render('auth/login', [
             'alertas' => $alertas

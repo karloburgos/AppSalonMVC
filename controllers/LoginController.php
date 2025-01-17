@@ -33,8 +33,6 @@ class LoginController {
                         printArray($_SESSION);
                     };
 
-                    printArray($resultado);
-
 
                 }else{
                     Usuario::setAlerta('error', 'Usuario no Encontrado');
@@ -130,7 +128,7 @@ class LoginController {
             Usuario::setAlerta('error', 'El Token no es Valido');
         }else{
             $usuario->confirmado = '1';
-            $usuario->token = null;
+            $usuario->token = '';
 
             //Actualizamos a Usuario
             $usuario->guardar();

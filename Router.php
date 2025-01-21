@@ -61,4 +61,6 @@ class Router
         $contenido = ob_get_clean(); // Limpia el Buffer
         include_once __DIR__ . '/views/layout.php';
     }
+
+    
 }

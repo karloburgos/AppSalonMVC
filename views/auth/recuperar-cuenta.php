@@ -1,6 +1,9 @@
 <h1 class="nombre-pagina">Recuperar Cuenta</h1>
 <p class="descripcion-pagina">Restablece tu password ingresando tu email a continuación.</p>
 
+<?php include_once __DIR__ . '/../templates/alertas.php';
+?>
+
 <form action="/recuperar-cuenta" method="POST" class="formulario">
     <div class="campo">
         <label for="email">Email:</label>

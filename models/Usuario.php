@@ -65,6 +65,25 @@ class Usuario extends ActiveRecord{
         return self::$alertas;
     }
 
+    public function validarEmail(){
+        if(!$this->email){
+            self::$alertas['error'][] = "No has Ingresado un Email";
+        }
+
+        return self::$alertas;
+    }
+
+    public function validarPassword(){
+        if(!$this->password){
+            self::$alertas['error'][] = "No has Ingresado un Password";
+        }
+        if(strlen($this->password) < 8 ){
+            self::$alertas['error'][] = "El password debe tener al menos 8 caracteres";
+        }
+
+        return self::$alertas;
+    }
+
     public function existeUsuario(){
         $query = "SELECT * FROM " . self::$tabla . " WHERE email = '" . $this->email . "' LIMIT 1";
 

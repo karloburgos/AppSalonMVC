@@ -24,16 +24,23 @@ class LoginController {
                     echo "El usuario Existe";
                     //Validamos la Contraseña y que este verificado
                     if($usuario->passwordAndConfirmado($auth->password)){
+                        if(!$_SESSION){
                         session_start();
+                        }
 
                         $_SESSION['id'] = $usuario->id;
                         $_SESSION['nombre'] = $usuario->nombre;
                         $_SESSION['apellido'] = $usuario->apellido;
 
+                        if($usuario->admin === "1"){
+                            $_SESSION['admin'] = $usuario->admin ?? null;
+                            header('Location: /admin');
+                        }else{
+                            header('Location: /cita');
+                        }
+
                         printArray($_SESSION);
                     };
-
-                    printArray($resultado);
 
 
                 }else{
@@ -54,21 +61,81 @@ class LoginController {
     }
 
     public static function recuperarCuenta(Router $router){
-
+        $alertas = [];
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $auth = new Usuario($_POST);
+            $alertas = $auth->validarEmail();
 
+            if(empty($alertas)){
+                //Comprobar que el email exista
+                $usuario = $auth->where('email', $auth->email);
+
+                if($usuario && $usuario->confirmado === "1"){
+
+
+                    //Generar Token
+                    $usuario->crearToken();
+                    $usuario->guardar();
+
+                    //Enviar Email
+                    $email = new Email($usuario->email, $usuario->nombre, $usuario->token);
+                    $email->enviarInstrucciones();
+
+                    //Alerta de exito
+                    Usuario::setAlerta('exito', 'Revisa tu Email y siguie las instrucciones');
+                    $alertas = Usuario::getAlertas();
+                }else{
+                    Usuario::setAlerta('error', 'El usuario no existe o no esta confirmado');
+                    $alertas = Usuario::getAlertas();
+                }
+            }
         }
         
         $router->render('auth/recuperar-cuenta', [
-
+            'alertas' => $alertas
         ]);
     }
 
-    public static function recuperar(){
+    public static function recuperar(Router $router){
+        $alertas = [];
+        $error = false;
+        if(isset($_GET['token'])){
+            $token = s($_GET['token']) ?? null;
+            $usuario = Usuario::where('token', $token);
+        }
+
+        //Buscar Usuario por su Token
+
+
+        if(empty($usuario)){
+            Usuario::setAlerta('error', 'Token no Valido');
+            $alertas = Usuario::getAlertas();
+            $error = TRUE;
+        }
 
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $password = new Usuario($_POST);
+            $alertas = $password->validarPassword();
+
+            if(empty($alertas)){
+                $usuario->password = null;
+                $usuario->password = $password->password;
+                $usuario->hashPassword();
+                $usuario->token = '';
+                $resultado = $usuario->guardar();
+                if($resultado){
+                    header('Location: /');
+                }
+            }
+
+            
 
         }
+
+        $router->render('auth/recuperar', [
+            'alertas' => $alertas,
+            'error' => $error
+        ]);
         
     }
 
@@ -130,7 +197,7 @@ class LoginController {
             Usuario::setAlerta('error', 'El Token no es Valido');
         }else{
             $usuario->confirmado = '1';
-            $usuario->token = null;
+            $usuario->token = '';
 
             //Actualizamos a Usuario
             $usuario->guardar();

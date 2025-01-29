@@ -3,6 +3,7 @@ const pasoInicial = 1;
 const pasoFinal = 3;
 
 const cita = {
+    id: '',
     nombre: '',
     fecha: '',
     hora: '',
@@ -24,6 +25,7 @@ function iniciarApp(){
 
     consultarAPI(); //Consulta a la BD
 
+    idCliente();
     nombreCliente();//Añade el nombre del cliente al objeto de la cita
     seleccionarfecha();//Añade y valida la fecha seleccionada
     seleccionarHora();//Añade y valida la fecha seleccionada
@@ -167,6 +169,10 @@ function mostrarServicios(servicios){
 
     const divServicio = document.querySelector(`[data-id-servicio='${id}']`);
     divServicio.classList.toggle('seleccionado');
+}
+
+function idCliente(){
+    cita.id = document.querySelector('#id').value;
 }
 
 function nombreCliente (){
@@ -320,16 +326,45 @@ function mostrarResumen(){
 
 async function reservarCita (){
     const datos = new FormData();
-    datos.append('nombre', 'Karlo Antonio');
+    const {id, nombre, fecha, hora, servicios} = cita;
+
+    datos.append('usuarioId', id);
+    datos.append('fecha', fecha);
+    datos.append('hora', hora);
+
+    const idServicios = servicios.map(servicio => servicio.id);
+    datos.append('servicioId', idServicios);
     // console.log([...datos]);
 
     //Conexión a la Api
     $url = 'http://localhost:3000/api/cita';
 
-    const respuesta = await fetch($url, {
-        method: 'POST'
-    });
+    try {
+        const respuesta = await fetch($url, {
+            method: 'POST',
+            body: datos
+        });
+        
+        resultado = await respuesta.json();
+        console.log(resultado);
+        if(resultado.resultado){
+            Swal.fire({
+                icon: "success",
+                title: "Listo...",
+                text: "Se guardo su cita con exito!!",
+                button: 'OK'
+              }).then(()=>{
+                window.location.reload();
+              });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Ocurrio un error al querer guardar tu cita",
+            footer: 'Ntp estamos trabajando en eso'
+          });
+    }
+
     
-    resultado = await respuesta.json();
-    console.log(resultado);
 }

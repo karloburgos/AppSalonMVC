@@ -9,6 +9,7 @@ class CitaController {
         if(!$_SESSION){
             session_start();
         }
+        isAuth();
 
 
         $router->render('cita/index', [

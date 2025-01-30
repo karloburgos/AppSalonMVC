@@ -18,7 +18,6 @@ class APIController{
         //Guardamos la Cita
         $resultado = $cita->guardar();
         
-        echo json_encode($resultado);
         //Extraemos el Id
         $id = $resultado['id'];
 

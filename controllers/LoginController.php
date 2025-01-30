@@ -21,7 +21,6 @@ class LoginController {
 
                 //Validamos si esta el Correo
                 if($usuario){
-                    echo "El usuario Existe";
                     //Validamos la Contraseña y que este verificado
                     if($usuario->passwordAndConfirmado($auth->password)){
                         if(!$_SESSION){
@@ -31,6 +30,7 @@ class LoginController {
                         $_SESSION['id'] = $usuario->id;
                         $_SESSION['nombre'] = $usuario->nombre;
                         $_SESSION['apellido'] = $usuario->apellido;
+                        $_SESSION['login'] = true;
 
                         if($usuario->admin === "1"){
                             $_SESSION['admin'] = $usuario->admin ?? null;
@@ -40,15 +40,18 @@ class LoginController {
                         }
 
                         printArray($_SESSION);
+                    }else{
+                        Usuario::setAlerta('error', 'Usuario o Contraseña Incorrecta');
                     };
 
 
                 }else{
                     Usuario::setAlerta('error', 'Usuario no Encontrado');
-                    $alertas = Usuario::getAlertas();
                 }
+
             }
         }
+        $alertas = Usuario::getAlertas();
 
         $router->render('auth/login', [
             'alertas' => $alertas
@@ -57,7 +60,13 @@ class LoginController {
     }
 
     public static function logout(){
-        
+        if(!$_SESSION){
+            session_start();
+        }
+
+        $_SESSION=[];
+
+        header('Location: /');
     }
 
     public static function recuperarCuenta(Router $router){

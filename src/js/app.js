@@ -344,27 +344,35 @@ async function reservarCita (){
             method: 'POST',
             body: datos
         });
-        
+    
+        if (!respuesta.ok) {  
+            throw new Error(`Error HTTP: ${respuesta.status}`);
+        }
+    
         resultado = await respuesta.json();
         console.log(resultado);
-        if(resultado.resultado){
+    
+        if (resultado.resultado) {
             Swal.fire({
                 icon: "success",
                 title: "Listo...",
-                text: "Se guardo su cita con exito!!",
-                button: 'OK'
-              }).then(()=>{
+                text: "Se guardó su cita con éxito!!",
+                button: "OK",
+            }).then(() => {
                 window.location.reload();
-              });
+            });
         }
     } catch (error) {
+        console.error("Error en la solicitud:", error);
+    
         Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: "Ocurrio un error al querer guardar tu cita",
-            footer: 'Ntp estamos trabajando en eso'
-          });
+            text: "Ocurrió un error al querer guardar tu cita",
+            footer: "Ntp estamos trabajando en eso",
+        });
     }
+    
 
     
 }

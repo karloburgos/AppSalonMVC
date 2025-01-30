@@ -1,6 +1,8 @@
 <h1 class="nombre-pagina">Crear Nueva Cita</h1>
 <p class="descripcion-pagina">Elige tus servicios ycoloca tus datos</p>
 
+<?php include_once __DIR__ . '/../templates/barra.php'; ?>
+
 <div class="" id="app">
     <nav class="tabs">
         <button class="actual" type="button" data-paso="1">Servicios</button>
@@ -27,7 +29,7 @@
             </div>
             <div class="campo">
                 <label for="hora">Hora</label>
-                <input type="time" id="hora">
+                <input type="time" id="hora" step="1800">
             </div>
             <input type="hidden" id="id" value="<?php echo $id ?>">
         </form>

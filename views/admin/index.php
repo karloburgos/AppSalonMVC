@@ -12,4 +12,34 @@
     </form>
 </div>
 
-<div class="" id="citas-admin"></div>
+<div class="" id="citas-admin">
+    <ul class="citas">
+        <?php 
+        $idCita = 0; 
+        foreach ($citas as $cita): 
+            if($idCita !== $cita->id):
+        ?>
+            <p>ID: <?php echo $cita->id ?></p>
+            <p>Hora: <?php echo $cita->hora ?></p>
+            <p>Cliente: <?php echo $cita->cliente ?></p>
+            <p>Cliente: <?php echo $cita->email ?></p>
+            <p>Cliente: <?php echo $cita->telefono ?></p>
+            <h3>Servicios:</h3>
+        <?php 
+        
+                endif; 
+                ?>
+                <p class="servicio <?php if(empty($cita->servicio)){ echo "error";} ?>"><?php 
+                if(empty($cita->servicio)){
+                    echo "No se Encontraron Servicios";
+                }else{
+
+                
+                echo $cita->servicio;
+                } ?></p>
+                <?php
+                $idCita=$cita->id; 
+            endforeach; 
+        ?>    
+    </ul>
+</div>
